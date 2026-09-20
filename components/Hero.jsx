@@ -45,7 +45,7 @@ export default function Hero() {
               <h3>100%</h3>
               <p>Authentic Handlooms</p>
             </div>
-            <div class="stat-item">
+            <div className="stat-item">
               <h3>In-Store</h3>
               <p>Trial & Custom Fit</p>
             </div>
