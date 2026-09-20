@@ -1,0 +1,14 @@
+{
+  "name": "padma-clothing-kariyad",
+  "version": "1.0.0",
+  "description": "Padma Men's Wear & Textiles - Kariyad Website",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "serve": "node server.js"
+  },
+  "keywords": ["padma", "clothing", "kariyad", "textiles"],
+  "author": "Padma Textiles",
+  "license": "ISC"
+}
