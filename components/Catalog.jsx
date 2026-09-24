@@ -32,9 +32,15 @@ export default function Catalog() {
   });
 
   return (
-    <section className="editorial-catalog-section" id="collection">
+    <section className="scroll-section editorial-catalog-section" id="catalog">
       <div className="container-fluid">
         {/* Section Header */}
+        <div className="section-kicker-row" style={{ marginBottom: '1.5rem' }}>
+          <span className="section-number-pill">07 // CATALOG</span>
+          <span className="kicker-line-divider" />
+          <span className="kicker-subtext">FULL MENSWEAR LOOKBOOK</span>
+        </div>
+
         <div className="editorial-section-header catalog-header-flex">
           <div>
             <div className="header-eyebrow">
