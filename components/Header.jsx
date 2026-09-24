@@ -1,43 +1,178 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useStore } from '@/context/StoreContext';
 
 export default function Header() {
+  const { cartCount, wishlistCount, openCart, openWishlist, openSearch } = useStore();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <header className="site-header">
-      <div className="container nav-inner">
-        <Link href="#home" className="brand-logo">
-          <div className="brand-symbol">P</div>
-          <div className="brand-text">
-            <span className="brand-name">PADMA</span>
-            <span className="brand-tag">MEN'S WEAR & TEXTILES • KARIYAD</span>
+    <>
+      <header className={`editorial-header ${isScrolled ? 'scrolled' : ''}`}>
+        <div className="container-fluid header-inner">
+          {/* Left: Brand Monogram & Name */}
+          <div className="header-left">
+            <button
+              className="mobile-hamburger-btn"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle navigation"
+              type="button"
+            >
+              <span className={`hamburger-bar ${mobileMenuOpen ? 'open' : ''}`}></span>
+              <span className={`hamburger-bar ${mobileMenuOpen ? 'open' : ''}`}></span>
+            </button>
+
+            <Link href="/" className="editorial-logo">
+              <span className="logo-main">PADMA</span>
+              <span className="logo-sub">KARIYAD // ATELIER</span>
+            </Link>
           </div>
-        </Link>
 
-        <nav>
-          <ul className="nav-links">
-            <li><a href="#home" className="active">Home</a></li>
-            <li><a href="#collection">Men's Collection</a></li>
-            <li><a href="#store-visit">Visit Store</a></li>
-            <li><a href="#reviews">Reviews</a></li>
-            <li><a href="#faqs">FAQs</a></li>
-          </ul>
-        </nav>
+          {/* Center: Editorial Nav */}
+          <nav className="header-center">
+            <ul className="editorial-nav-links">
+              <li><a href="#hero">CAMPAIGN</a></li>
+              <li><a href="#featured">EDITORIAL</a></li>
+              <li><a href="#collection">LOOKBOOK</a></li>
+              <li><a href="#categories">ARCHIVE</a></li>
+              <li><a href="#store-visit">BOUTIQUE</a></li>
+            </ul>
+          </nav>
 
-        <div className="nav-actions">
-          <a
-            href="https://wa.me/918113021038?text=Hello%20Padma%20Clothing%20Kariyad%2C%20I%20would%20like%20to%20enquire%20about%20your%20men's%20collections."
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-whatsapp-nav"
-          >
-            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.044c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.043.073.043.419-.101.824z"/>
-            </svg>
-            WhatsApp Us
-          </a>
+          {/* Right: Actions */}
+          <div className="header-right">
+            {/* Search */}
+            <button
+              type="button"
+              className="action-icon-btn"
+              onClick={openSearch}
+              aria-label="Search collection"
+              title="Search"
+            >
+              <svg width="19" height="19" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+
+            {/* Wishlist */}
+            <button
+              type="button"
+              className="action-icon-btn"
+              onClick={openWishlist}
+              aria-label="View saved pieces"
+              title="Wishlist"
+            >
+              <svg width="19" height="19" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              {wishlistCount > 0 && <span className="action-badge-dot">{wishlistCount}</span>}
+            </button>
+
+            {/* Cart / Bag */}
+            <button
+              type="button"
+              className="action-icon-btn bag-btn"
+              onClick={openCart}
+              aria-label="View shopping bag"
+              title="Bag"
+            >
+              <span className="bag-label">BAG</span>
+              <span className="bag-counter">[{cartCount}]</span>
+            </button>
+
+            {/* WhatsApp Contact */}
+            <a
+              href="https://wa.me/918113021038?text=Hello%20Padma%20Clothing%20Kariyad%2C%20I%20would%20like%20to%20enquire%20about%20your%20menswear%20collection."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-header-wa"
+              title="Direct WhatsApp Consultation"
+            >
+              <span className="live-pulse"></span>
+              WHATSAPP
+            </a>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Mobile Editorial Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="mobile-menu-overlay" onClick={() => setMobileMenuOpen(false)}>
+          <div className="mobile-menu-content" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-menu-header">
+              <span className="logo-main">PADMA</span>
+              <button
+                className="mobile-close-btn"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Close menu"
+              >
+                ✕
+              </button>
+            </div>
+
+            <ul className="mobile-nav-list">
+              <li>
+                <a href="#hero" onClick={() => setMobileMenuOpen(false)}>
+                  <span className="menu-num">01</span> CAMPAIGN
+                </a>
+              </li>
+              <li>
+                <a href="#featured" onClick={() => setMobileMenuOpen(false)}>
+                  <span className="menu-num">02</span> EDITORIAL
+                </a>
+              </li>
+              <li>
+                <a href="#collection" onClick={() => setMobileMenuOpen(false)}>
+                  <span className="menu-num">03</span> LOOKBOOK
+                </a>
+              </li>
+              <li>
+                <a href="#categories" onClick={() => setMobileMenuOpen(false)}>
+                  <span className="menu-num">04</span> ARCHIVE
+                </a>
+              </li>
+              <li>
+                <a href="#store-visit" onClick={() => setMobileMenuOpen(false)}>
+                  <span className="menu-num">05</span> BOUTIQUE / VISIT
+                </a>
+              </li>
+              <li>
+                <a href="#faqs" onClick={() => setMobileMenuOpen(false)}>
+                  <span className="menu-num">06</span> INQUIRIES
+                </a>
+              </li>
+            </ul>
+
+            <div className="mobile-menu-footer">
+              <div className="mobile-store-meta">
+                <p><strong>LOCATION:</strong> NEAR KNUP SCHOOL, KARIYAD</p>
+                <p><strong>HOURS:</strong> 9:30 AM – 8:30 PM</p>
+                <p><strong>TEL:</strong> +91 81130 21038</p>
+              </div>
+              <a
+                href="https://wa.me/918113021038"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-editorial-red"
+                style={{ textAlign: 'center', marginTop: '1rem', width: '100%' }}
+              >
+                DIRECT WHATSAPP CONCIERGE
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

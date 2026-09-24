@@ -2,18 +2,19 @@
 
 import { useState } from 'react';
 import { CATEGORIES, PRODUCTS } from '@/data/products';
+import { useStore } from '@/context/StoreContext';
 import ProductCard from './ProductCard';
-import ProductModal from './ProductModal';
 
 export default function Catalog() {
-  const [currentCategory, setCurrentCategory] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const { activeCategory, setActiveCategory, searchQuery, setSearchQuery } = useStore();
+  const [sortBy, setSortBy] = useState('featured');
 
+  // Filter products
   const filteredProducts = PRODUCTS.filter((item) => {
-    const matchCat = currentCategory === 'all' || item.category === currentCategory;
-    const q = searchQuery.toLowerCase();
+    const matchCat = activeCategory === 'all' || item.category === activeCategory;
+    const q = searchQuery.toLowerCase().trim();
     const matchSearch =
+      q === '' ||
       item.name.toLowerCase().includes(q) ||
       item.fabric.toLowerCase().includes(q) ||
       item.categoryName.toLowerCase().includes(q) ||
@@ -21,88 +22,130 @@ export default function Catalog() {
     return matchCat && matchSearch;
   });
 
-  const resetFilters = () => {
-    setCurrentCategory('all');
-    setSearchQuery('');
-  };
+  // Sort products
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    const priceA = parseInt(a.price.replace(/[^\d]/g, ''), 10) || 0;
+    const priceB = parseInt(b.price.replace(/[^\d]/g, ''), 10) || 0;
+    if (sortBy === 'price-low') return priceA - priceB;
+    if (sortBy === 'price-high') return priceB - priceA;
+    return 0; // featured default
+  });
 
   return (
-    <section className="catalog-section" id="collection">
-      <div className="container">
-        <div className="section-header">
-          <span className="section-subtitle">Exclusive Men's Catalog</span>
-          <h2 className="section-title">Designed for Distinction & Festivity</h2>
-          <p className="section-desc">
-            Browse our fine selection of Kerala Kasavu mundus, wedding silks, pure linens, and casual kurtas. Click any piece to see detailed specs or message us on WhatsApp to check stock before visiting.
-          </p>
+    <section className="editorial-catalog-section" id="collection">
+      <div className="container-fluid">
+        {/* Section Header */}
+        <div className="editorial-section-header catalog-header-flex">
+          <div>
+            <div className="header-eyebrow">
+              <span className="red-dot"></span>
+              <span>COMPLETE MENSWEAR LOOKBOOK</span>
+            </div>
+            <h2 className="editorial-huge-heading">THE ARCHIVE</h2>
+          </div>
+
+          <div className="catalog-sort-group">
+            <span className="sort-label">SORT BY:</span>
+            <select
+              className="editorial-select"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="featured">CURATED / FEATURED</option>
+              <option value="price-low">PRICE: LOW TO HIGH</option>
+              <option value="price-high">PRICE: HIGH TO LOW</option>
+            </select>
+          </div>
         </div>
 
-        {/* Category & Search Filters */}
-        <div className="filter-container">
-          <div className="category-tabs">
-            {CATEGORIES.map((cat) => (
+        {/* Minimal Editorial Filter Bar */}
+        <div className="catalog-control-panel">
+          <div className="category-scroll-track">
+            {CATEGORIES.map((cat) => {
+              const count =
+                cat.id === 'all'
+                  ? PRODUCTS.length
+                  : PRODUCTS.filter((p) => p.category === cat.id).length;
+              const isActive = activeCategory === cat.id;
+
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  className={`editorial-filter-chip ${isActive ? 'active' : ''}`}
+                  onClick={() => setActiveCategory(cat.id)}
+                >
+                  <span className="chip-name">{cat.label.toUpperCase()}</span>
+                  <span className="chip-count">({count})</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Quick Search */}
+          <div className="catalog-search-inline">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              placeholder="FILTER FABRIC, WEAVE, COLOR..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
               <button
-                key={cat.id}
                 type="button"
-                className={`category-tab ${currentCategory === cat.id ? 'active' : ''}`}
-                onClick={() => setCurrentCategory(cat.id)}
+                className="clear-search-btn"
+                onClick={() => setSearchQuery('')}
               >
-                {cat.label}
+                ✕
               </button>
-            ))}
-          </div>
-
-          <div className="catalog-toolbar">
-            <div className="search-box">
-              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <input
-                type="text"
-                placeholder="Search by fabric, color, or style..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-
-            <div className="results-count">
-              Showing <span>{filteredProducts.length}</span> luxury men's designs
-            </div>
+            )}
           </div>
         </div>
 
-        {/* Products Grid */}
-        <div className="products-grid">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onQuickView={(p) => setSelectedProduct(p)}
-              />
+        {/* Results Metadata */}
+        <div className="catalog-status-bar">
+          <span className="status-count-text">
+            SHOWING <strong>{sortedProducts.length}</strong> OF {PRODUCTS.length} MENSWEAR SILHOUETTES
+          </span>
+          {activeCategory !== 'all' && (
+            <button
+              type="button"
+              className="btn-clear-filter"
+              onClick={() => setActiveCategory('all')}
+            >
+              RESET TO ALL [×]
+            </button>
+          )}
+        </div>
+
+        {/* Product Cards Grid */}
+        <div className="editorial-products-grid">
+          {sortedProducts.length > 0 ? (
+            sortedProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))
           ) : (
-            <div className="empty-catalog-state">
-              <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <h3>No matching men's attire found</h3>
-              <p>Try searching for Kasavu, Silk Kurta, Linen Shirt, or Sherwani, or browse all categories.</p>
-              <button className="btn-primary" style={{ marginTop: '1.5rem' }} onClick={resetFilters} type="button">
-                View All Collections
+            <div className="catalog-empty-block">
+              <span className="empty-glyph">—</span>
+              <h3>NO SILHOUETTES FOUND</h3>
+              <p>No products match your current filter. Clear search or select another category.</p>
+              <button
+                type="button"
+                className="btn-editorial-red"
+                onClick={() => {
+                  setActiveCategory('all');
+                  setSearchQuery('');
+                }}
+              >
+                VIEW FULL ARCHIVE
               </button>
             </div>
           )}
         </div>
       </div>
-
-      {/* Quick View Modal */}
-      {selectedProduct && (
-        <ProductModal
-          product={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-        />
-      )}
     </section>
   );
 }

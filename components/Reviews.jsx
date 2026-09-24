@@ -2,26 +2,33 @@ import { REVIEWS } from '@/data/products';
 
 export default function Reviews() {
   return (
-    <section className="reviews-section" id="reviews">
-      <div className="container">
-        <div className="section-header">
-          <span className="section-subtitle">Customer Voices</span>
-          <h2 className="section-title">Trusted Across Kariyad & Thalassery</h2>
-          <p className="section-desc">Hear what our local shoppers have to say about our men's collection and in-store hospitality.</p>
+    <section className="editorial-reviews-section" id="reviews">
+      <div className="container-fluid">
+        <div className="editorial-section-header">
+          <div className="header-eyebrow">
+            <span className="red-dot"></span>
+            <span>CUSTOMER VOICES // VERIFIED</span>
+          </div>
+          <h2 className="editorial-huge-heading">TESTIMONIALS</h2>
         </div>
 
-        <div className="reviews-grid">
+        <div className="reviews-editorial-grid">
           {REVIEWS.map((r, i) => (
-            <div key={i} className="review-card">
-              <div className="review-stars">
-                {'★'.repeat(r.rating)}
+            <div key={i} className="editorial-review-card">
+              <div className="review-card-top">
+                <span className="review-index">0{i + 1} //</span>
+                <span className="review-stars-red">{'★'.repeat(r.rating)}</span>
               </div>
-              <p className="review-comment">"{r.comment}"</p>
-              <div className="reviewer-meta">
-                <div className="reviewer-avatar">{r.name.charAt(0)}</div>
-                <div className="reviewer-info">
-                  <h5>{r.name}</h5>
-                  <p>{r.location} • {r.date}</p>
+
+              <blockquote className="review-quote-text">
+                "{r.comment}"
+              </blockquote>
+
+              <div className="review-author-block">
+                <div className="author-avatar">{r.name.charAt(0)}</div>
+                <div className="author-meta">
+                  <h5 className="author-name">{r.name}</h5>
+                  <span className="author-loc">{r.location.toUpperCase()} • {r.date.toUpperCase()}</span>
                 </div>
               </div>
             </div>

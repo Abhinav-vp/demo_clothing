@@ -11,32 +11,36 @@ export default function Faq() {
   };
 
   return (
-    <section className="faqs-section" id="faqs">
-      <div className="container">
-        <div className="section-header">
-          <span className="section-subtitle">Got Questions?</span>
-          <h2 className="section-title">Frequently Asked Questions</h2>
-          <p className="section-desc">Everything you need to know about shopping at Padma Men's Wear, Kariyad.</p>
+    <section className="editorial-faq-section" id="faqs">
+      <div className="container-fluid">
+        <div className="editorial-section-header">
+          <div className="header-eyebrow">
+            <span className="red-dot"></span>
+            <span>CUSTOMER ASSISTANCE // INQUIRIES</span>
+          </div>
+          <h2 className="editorial-huge-heading">FREQUENT INQUIRIES</h2>
         </div>
 
-        <div className="faq-list">
+        <div className="editorial-faq-list">
           {STORE_FAQS.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
-              <div key={index} className={`faq-item ${isOpen ? 'open' : ''}`}>
+              <div key={index} className={`editorial-faq-row ${isOpen ? 'active' : ''}`}>
                 <button
                   type="button"
-                  className="faq-question-btn"
+                  className="faq-trigger-btn"
                   onClick={() => toggle(index)}
+                  aria-expanded={isOpen}
                 >
-                  <span>{faq.q}</span>
-                  <span className="faq-icon" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)' }}>▼</span>
+                  <span className="faq-num">0{index + 1}</span>
+                  <span className="faq-question-title">{faq.q}</span>
+                  <span className="faq-toggle-glyph">{isOpen ? '—' : '+'}</span>
                 </button>
                 <div
-                  className="faq-answer"
+                  className="faq-accordion-body"
                   style={{
-                    maxHeight: isOpen ? '250px' : '0',
-                    paddingBottom: isOpen ? '1.5rem' : '0'
+                    maxHeight: isOpen ? '300px' : '0',
+                    opacity: isOpen ? 1 : 0
                   }}
                 >
                   <p>{faq.a}</p>
